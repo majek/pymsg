@@ -15,6 +15,7 @@
 import time, threading, sys
 
 import amqplib.client_0_8 as amqp
+import pika, asyncore
 
 class PerfRate:
 
@@ -73,7 +74,7 @@ class ScaleProducer ( threading.Thread ):
             self.chan.exchange_declare(exchange=dest, type="direct", durable=True, auto_delete=False)
             self.chan.queue_bind(queue=dest, exchange=dest, routing_key=dest)
             self.chan.basic_publish(msg,exchange=dest,routing_key=dest)
-            self.rate.increment(s)
+            self.rate.increment()
 
     def stop(self):
         self.running = False
@@ -85,16 +86,16 @@ class PerfConsumerSync ( threading.Thread ):
     def __init__(self, chan):
         self.chan = chan
         self.rate = PerfRate()
-        self.chan.basic_consume(queue='perftest', no_ack=True, callback=self.consume, consumer_tag="perftest")
         threading.Thread.__init__ ( self )
 
     def run (self):
+        self.chan.basic_consume(self.consume, queue='perftest', no_ack=True)
         while (self.running):
-            self.chan.wait()
+            asyncore.loop(count = 1)
 
-    def consume(self, msg):
+    def consume(self, method, header, body):
         self.rate.increment()
-        #self.chan.basic_ack(msg.delivery_tag)
+        #self.chan.basic_ack(delivery_tag = method.delivery_tag)
 
 
     def stop(self):

@@ -14,9 +14,11 @@
 
 import sys, time, threading, perftest
 
-import amqplib.client_0_8 as amqp
+import pika
+conn = pika.AsyncoreConnection(pika.ConnectionParameters(
+        '127.0.0.1',
+        credentials = pika.PlainCredentials('guest', 'guest')))
 
-conn = amqp.Connection(host="localhost:5672 ", userid="guest", password="guest", virtual_host="/", insist=False)
 chan = conn.channel()
 
 chan.queue_declare(queue="perftest", durable=True, exclusive=False, auto_delete=False)
