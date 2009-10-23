@@ -27,11 +27,9 @@ chan.queue_bind(queue="perftest", exchange="perftest", routing_key="perftest")
 producer = perftest.PerfProducer(chan)
 producer.start()
 
-for i in range(1, 100):
-    time.sleep(10)
-    print "producer sent ", producer.rate.printRate()
-
-producer.stop()
-
-chan.close()
-conn.close()
+try:
+    for i in range(1, 100):
+        time.sleep(10)
+        print "producer sent ", producer.rate.printRate()
+except KeyboardInterrupt:
+    sys.exit(0)

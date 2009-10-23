@@ -26,12 +26,10 @@ chan.queue_bind(queue="perftest", exchange="perftest", routing_key="perftest")
 consumer = perftest.PerfConsumerSync(chan)
 consumer.start()
 
-for i in range(1, 100):
-    time.sleep(10)
-    print "consumer received ", consumer.rate.printRate()
+try:
+    for i in range(1, 100):
+        time.sleep(10)
+        print "consumer received ", consumer.rate.printRate()
 
-consumer.stop()
-
-
-chan.close()
-conn.close()
+except KeyboardInterrupt:
+    sys.exit(0)

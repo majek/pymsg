@@ -85,7 +85,7 @@ class PerfConsumerSync ( threading.Thread ):
     def __init__(self, chan):
         self.chan = chan
         self.rate = PerfRate()
-        self.chan.basic_consume(queue='perftest', no_ack=False, callback=self.consume, consumer_tag="perftest")
+        self.chan.basic_consume(queue='perftest', no_ack=True, callback=self.consume, consumer_tag="perftest")
         threading.Thread.__init__ ( self )
 
     def run (self):
@@ -94,7 +94,7 @@ class PerfConsumerSync ( threading.Thread ):
 
     def consume(self, msg):
         self.rate.increment()
-        self.chan.basic_ack(msg.delivery_tag)        
+        #self.chan.basic_ack(msg.delivery_tag)
 
 
     def stop(self):
